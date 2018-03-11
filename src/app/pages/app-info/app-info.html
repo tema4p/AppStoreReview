@@ -1,0 +1,22 @@
+<!--
+  Generated template for the AppInfoPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{item.trackName }}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <div *ngFor="let review of reviews">
+      <h3>{{review.rating}} - {{review.title}}</h3>
+      <p>{{review.content}}</p>
+      <p>{{review.version}}</p>
+    </div>
+</ion-content>
