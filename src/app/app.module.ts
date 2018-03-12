@@ -14,6 +14,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 
+import { ReviewService } from './services/reviewService';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -39,6 +41,7 @@ import { HttpClientModule } from '@angular/common/http';
     TabsPage
   ],
   providers: [
+    ReviewService,
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
