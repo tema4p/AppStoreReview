@@ -7,16 +7,23 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>{{item.trackName }}</ion-title>
+    <ion-title>{{item.trackName}}</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-    <div *ngFor="let review of reviews">
+  <ion-list>
+    <div *ngFor="let review of items">
       <h3>{{review.rating}} - {{review.title}}</h3>
       <p>{{review.content}}</p>
       <p>{{review.version}}</p>
     </div>
+  </ion-list>
+
+  <ion-infinite-scroll [threshold]="'50%'" (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
 </ion-content>

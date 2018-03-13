@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { forkJoin } from "rxjs/observable/forkJoin";
 import * as jQuery from "jquery";
+import { Observable } from "rxjs/Observable";
 
 @Injectable()
 export class ReviewService {
-
-  private reviews: any = [];
   private countries = {
     ae: 'United Arab Emirates',
     ag: 'Antigua and Barbuda',
@@ -167,44 +166,47 @@ export class ReviewService {
 
   constructor(private http: HttpClient) {}
 
-  public getAll(id: number): any {
-    let queries: any = [];
-    Object.keys(this.countries).forEach((country) => {
-      queries.push(this.http.get(`https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`, { responseType: 'text' }));
-    });
+  public getAll(id: number): Observable<any> {
+    return new Observable(observer => {
+      let queries: any = [];
+      let reviews: any = [];
 
-    forkJoin(queries).subscribe(results => {
-      results.map((xml: any) => {
-        xml = jQuery.parseXML(xml);
-        console.log('xml', xml);
-        jQuery(xml).find('entry').each((index, entry) => {
-          console.log('entry', entry);
-          let author = jQuery(entry).find('author').text();
-          if (!author) return;
+      Object.keys(this.countries).forEach((country) => {
+        queries.push(this.http.get(`https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`, { responseType: 'text' }));
+      });
 
-          let review = {};
-          jQuery(entry).find('> *').each(function(){
-            review[this.tagName] = this.innerHTML;
+      forkJoin(queries).subscribe(results => {
+        results.map((xml: any) => {
+          xml = jQuery.parseXML(xml);
+          jQuery(xml).find('entry').each((index, entry) => {
+            let author = jQuery(entry).find('author').text();
+            if (!author) return;
+
+            let review = {};
+            jQuery(entry).find('> *').each(function() {
+              review[this.tagName] = this.innerHTML;
+            });
+
+            reviews.push({
+              id: review['id'],
+              title: review['title'],
+              updated: review['updated'],
+              rating: review['im:rating'],
+              version: review['im:version'],
+              name: review['name'],
+              content: jQuery(entry).find('content[type=text]').text(),
+            })
           });
-          console.log('review', review);
-
-          this.reviews.push({
-            id: review['id'],
-            title: review['title'],
-            updated: review['updated'],
-            rating: review['im:rating'],
-            version: review['im:version'],
-            name: review['name'],
-            content: jQuery(entry).find('content[type=text]').text(),
-          })
         });
 
-        this.reviews.sort((a,b) => {
+        reviews.sort((a, b) => {
           return parseInt(a.id) - parseInt(b.id);
         });
 
-        this.reviews.reverse();
-      })
+        observer.next(reviews.reverse());
+      }, error => {
+        observer.error(error);
+      });
     });
   }
 
