@@ -9,11 +9,33 @@
                  (ionInput)="getItems($event)">
   </ion-searchbar>
   <ion-list>
-    <ion-item *ngFor="let item of items"
+    <div *ngFor="let item of items"
+         class="apps-list flex"
      (click)="goToApp(item)">
-      <h2>{{item.trackName}}</h2>
-      <h3>{{item.artistName}}</h3>
-      <p>{{item.description}}</p>
-    </ion-item>
+      <div class="flex flex-column left-column">
+        <div class="rating flex">
+          <span *ngFor="let s of [1,2,3,4,5]">
+            <ion-icon name="{{getStarType(s,item.averageUserRating)}}"></ion-icon>
+          </span>
+        </div>
+        <div class="img" [ngStyle]="{'background-image': 'url(' + item.artworkUrl512 + ')'}"></div>
+        <div>{{item.formattedPrice}}</div>
+
+        <div></div>
+      </div>
+      <div class="flex flex-column right-column">
+        <div class="title"><b>{{item.trackName}}</b> <br> <i>{{item.artistName}}</i></div>
+        <div class="description">{{item.description}}</div>
+
+        <div><i>{{item.genres.join(', ')}}</i></div>
+        <div class="info">
+          <span>v<b>{{item.version}}</b></span>
+          <span>{{(item.fileSizeBytes / 1024 / 1024).toFixed(1)}}Mb</span>
+          <span>{{getDateFormatted(item.currentVersionReleaseDate)}}</span>
+        </div>
+
+      </div>
+
+    </div>
   </ion-list>
 </ion-content>
