@@ -6,10 +6,11 @@
 
 <ion-content>
   <ion-searchbar [(ngModel)]="term"
-                 (ionInput)="getItems($event)">
+                 (ionInput)="getItems($event)"
+                 (type)="'search'">
   </ion-searchbar>
   <ion-list>
-    <div *ngFor="let item of items"
+    <ion-list *ngFor="let item of items"
          class="apps-list flex"
      (click)="goToApp(item)">
       <div class="flex flex-column left-column">
@@ -36,6 +37,6 @@
 
       </div>
 
-    </div>
+    </ion-list>
   </ion-list>
 </ion-content>

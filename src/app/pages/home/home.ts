@@ -14,7 +14,9 @@ export class HomePage {
   public term: string = 'english';
   constructor(public navCtrl: NavController,
               public http: HttpClient) {
-    this.getItems();
+    setTimeout(() => {
+      this.getItems();
+    },10);
   }
   getDateFormatted(text: string): string {
     return moment(text).format('L');
