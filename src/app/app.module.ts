@@ -14,6 +14,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 
+import { SpinnerDialog } from '@ionic-native/spinner-dialog';
+
 import { ReviewService } from './services/reviewService';
 
 @NgModule({
@@ -41,10 +43,11 @@ import { ReviewService } from './services/reviewService';
     TabsPage
   ],
   providers: [
-    ReviewService,
+    SpinnerDialog,
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    ReviewService
   ]
 })
 export class AppModule {}

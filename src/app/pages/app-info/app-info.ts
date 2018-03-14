@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
 import { ReviewService } from '../../services/reviewService';
+import { SpinnerDialog } from '@ionic-native/spinner-dialog';
+
 /**
  * Generated class for the AppInfoPage page.
  *
@@ -24,18 +26,19 @@ export class AppInfoPage {
 
   constructor(public navParams: NavParams,
               public http: HttpClient,
-              public reviewService: ReviewService) {
+              public reviewService: ReviewService,
+              private spinnerDialog: SpinnerDialog) {
     this.item = navParams.get('item');
   }
 
   ionViewDidLoad() {
-    this.reviewService
-      .getAll(this.item.trackId)
-      .subscribe(items => {
-        this.allReviews = items;
-        this.items = items.slice(0, this.perPage);
+    this.spinnerDialog.show();
+
+    this.reviewService.getByCountry('us', this.item.trackId).subscribe(items => {
+      this.allReviews = items;
+      this.items = items.slice(0, this.perPage);
+      this.spinnerDialog.hide();
     });
-    console.log('ionViewDidLoad AppInfoPage');
   }
 
   doInfinite(infiniteScroll): void {

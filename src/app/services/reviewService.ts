@@ -169,33 +169,49 @@ export class ReviewService {
   public getAll(id: number): Observable<any> {
     return new Observable(observer => {
       let queries: any = [];
-      let reviews: any = [];
 
       Object.keys(this.countries).forEach((country) => {
-        queries.push(this.http.get(`https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`, { responseType: 'text' }));
+        queries.push(this.getByCountry(country, id));
       });
 
       forkJoin(queries).subscribe(results => {
-        results.map((xml: any) => {
-          xml = jQuery.parseXML(xml);
-          jQuery(xml).find('entry').each((index, entry) => {
-            let author = jQuery(entry).find('author').text();
-            if (!author) return;
+        let reviews: any[] = [].concat(...results);
 
-            let review = {};
-            jQuery(entry).find('> *').each(function() {
-              review[this.tagName] = this.innerHTML;
-            });
+        reviews.sort((a, b) => {
+          return parseInt(a.id) - parseInt(b.id);
+        });
 
-            reviews.push({
-              id: review['id'],
-              title: review['title'],
-              updated: review['updated'],
-              rating: review['im:rating'],
-              version: review['im:version'],
-              name: review['name'],
-              content: jQuery(entry).find('content[type=text]').text(),
-            })
+        observer.next(reviews.reverse());
+      }, error => {
+        console.log(error);
+        observer.error(error);
+      });
+    });
+  }
+
+  public getByCountry(country: string, id: number): Observable<any> {
+    return new Observable(observer => {
+      let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
+      this.http.get(url, { responseType: 'text' }).subscribe((xml: any) => {
+        xml = jQuery.parseXML(xml);
+        let reviews: any[] = [];
+        jQuery(xml).find('entry').each((index, entry) => {
+          let author = jQuery(entry).find('author').text();
+          if (!author) return;
+
+          let review = {};
+          jQuery(entry).find('> *').each(function() {
+            review[this.tagName] = this.innerHTML;
+          });
+
+          reviews.push({
+            id: review['id'],
+            title: review['title'],
+            updated: review['updated'],
+            rating: review['im:rating'],
+            version: review['im:version'],
+            name: review['name'],
+            content: jQuery(entry).find('content[type=text]').text(),
           });
         });
 
@@ -204,8 +220,7 @@ export class ReviewService {
         });
 
         observer.next(reviews.reverse());
-      }, error => {
-        observer.error(error);
+        observer.complete();
       });
     });
   }
