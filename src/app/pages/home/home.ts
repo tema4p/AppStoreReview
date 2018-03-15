@@ -12,6 +12,7 @@ export class HomePage {
   public items: any[];
   public stars: [1,2,3,4,5];
   public term: string = 'english';
+  public fullImgDelay: boolean = false;
 
   private minLengthSearch: number = 3;
 
@@ -21,16 +22,21 @@ export class HomePage {
       this.getItems();
     },10);
   }
-  getDateFormatted(text: string): string {
+
+  public getDateFormatted(text: string): string {
     return moment(text).format('L');
   }
 
   public getItems(): void {
+    this.fullImgDelay = false;
     if (this.term.length >= this.minLengthSearch) {
       this.http.get(`https://itunes.apple.com/search?term=${this.term}&entity=software`)
         .subscribe((data: any) => {
           console.log('data.results', data.results);
           this.items = data.results;
+          setTimeout(() => {
+            this.fullImgDelay = true;
+          }, 10)
         });
     }
   }
@@ -38,16 +44,6 @@ export class HomePage {
   public goToApp(item): void {
     console.log('goToApp', item);
     this.navCtrl.push(AppInfoPage, {item: item});
-  }
-
-  public getStarType(star: number, rating: number): string {
-    if (star === rating + 0.5) {
-      return "ios-star-half";
-    } else if (star < rating) {
-      return "ios-star";
-    } else {
-      return "ios-star-outline";
-    }
   }
 }
 

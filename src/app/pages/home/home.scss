@@ -19,6 +19,7 @@ page-home {
     .left-column {
       flex: 0 0 80px;
       text-align: center;
+      position: relative;
       color: gray;
       .img {
         flex: 0 0 80px;
@@ -26,11 +27,28 @@ page-home {
         background-size: cover;
         border-radius: 15px;
         margin: 2px 0;
+        .img-main {
+          width: 80px;
+          height: 80px;
+          background-size: cover;
+          border-radius: 15px;
+        }
       }
       .rating {
         span {
-          flex: 1;
-          color: #de9a56;
+          min-width: 16px;
+          color: #bfbfbf;
+        }
+      }
+      .rating-fill {
+        position: absolute;
+        overflow: hidden;
+        color: #de9a56;
+        width: 0;
+        top: 0;
+        left: 0;
+        span {
+          min-width: 16px;
         }
       }
     }
@@ -42,7 +60,8 @@ page-home {
 
       }
       .description {
-        flex: 0 0 48px;
+        flex: 0 0 55px;
+        line-height: 14px;
         margin: 5px 0;
         font-weight: 400;
         overflow: hidden;
