@@ -7,7 +7,7 @@
 <ion-content>
   <ion-searchbar [(ngModel)]="term"
                  (ionInput)="getItems($event)"
-                 (type)="'search'">
+                 [debounce]="400">
   </ion-searchbar>
   <ion-list>
     <ion-list *ngFor="let item of items"

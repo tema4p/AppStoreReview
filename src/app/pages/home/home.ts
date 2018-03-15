@@ -12,6 +12,9 @@ export class HomePage {
   public items: any[];
   public stars: [1,2,3,4,5];
   public term: string = 'english';
+
+  private minLengthSearch: number = 3;
+
   constructor(public navCtrl: NavController,
               public http: HttpClient) {
     setTimeout(() => {
@@ -23,11 +26,13 @@ export class HomePage {
   }
 
   public getItems(): void {
-    this.http.get(`https://itunes.apple.com/search?term=${this.term}&entity=software`)
-      .subscribe((data: any) => {
-        console.log('data.results', data.results);
-        this.items = data.results;
-      });
+    if (this.term.length >= this.minLengthSearch) {
+      this.http.get(`https://itunes.apple.com/search?term=${this.term}&entity=software`)
+        .subscribe((data: any) => {
+          console.log('data.results', data.results);
+          this.items = data.results;
+        });
+    }
   }
 
   public goToApp(item): void {
