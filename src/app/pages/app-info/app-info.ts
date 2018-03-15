@@ -34,7 +34,7 @@ export class AppInfoPage {
   ionViewDidLoad() {
     this.spinnerDialog.show();
 
-    this.reviewService.getByCountry('us', this.item.trackId).subscribe(items => {
+    this.reviewService.getAll(this.item.trackId).subscribe(items => {
       this.allReviews = items;
       this.items = items.slice(0, this.perPage);
       this.spinnerDialog.hide();

@@ -3,6 +3,17 @@ import { HttpClient } from "@angular/common/http";
 import { forkJoin } from "rxjs/observable/forkJoin";
 import * as jQuery from "jquery";
 import { Observable } from "rxjs/Observable";
+import { Observer } from "rxjs/Observer";
+
+export interface IReview {
+  id: string;
+  title: string;
+  updated: Date;
+  rating: number;
+  version: number;
+  name: string;
+  content: string;
+}
 
 @Injectable()
 export class ReviewService {
@@ -166,16 +177,22 @@ export class ReviewService {
 
   constructor(private http: HttpClient) {}
 
-  public getAll(id: number): Observable<any> {
-    return new Observable(observer => {
-      let queries: any = [];
+  public getAll(id: number): Observable<IReview[]> {
+    return new Observable((observer: Observer<IReview[]>) => {
+      let queries: Observable<string>[] = [];
 
-      Object.keys(this.countries).forEach((country) => {
-        queries.push(this.getByCountry(country, id));
+      Object.keys(this.countries).forEach((country: string) => {
+        let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
+        queries.push(this.http.get(url, { responseType: 'text' }));
       });
 
-      forkJoin(queries).subscribe(results => {
-        let reviews: any[] = [].concat(...results);
+      forkJoin(queries).subscribe((results: string[]) => {
+        let reviews: IReview[] = [];
+
+        results.forEach((xmlString: string)=> {
+          let xmlDocument: XMLDocument = jQuery.parseXML(xmlString);
+          reviews = reviews.concat(this.extractReviews(xmlDocument));
+        });
 
         reviews.sort((a, b) => {
           return parseInt(a.id) - parseInt(b.id);
@@ -183,46 +200,35 @@ export class ReviewService {
 
         observer.next(reviews.reverse());
       }, error => {
-        console.log(error);
         observer.error(error);
       });
     });
   }
 
-  public getByCountry(country: string, id: number): Observable<any> {
-    return new Observable(observer => {
-      let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
-      this.http.get(url, { responseType: 'text' }).subscribe((xml: any) => {
-        xml = jQuery.parseXML(xml);
-        let reviews: any[] = [];
-        jQuery(xml).find('entry').each((index, entry) => {
-          let author = jQuery(entry).find('author').text();
-          if (!author) return;
+  private extractReviews(xml: XMLDocument): IReview[] {
+    let reviews: IReview[] = [];
 
-          let review = {};
-          jQuery(entry).find('> *').each(function() {
-            review[this.tagName] = this.innerHTML;
-          });
+    jQuery(xml).find('entry').each((index, entry) => {
+      let author = jQuery(entry).find('author').text();
+      if (!author) return;
 
-          reviews.push({
-            id: review['id'],
-            title: review['title'],
-            updated: review['updated'],
-            rating: review['im:rating'],
-            version: review['im:version'],
-            name: review['name'],
-            content: jQuery(entry).find('content[type=text]').text(),
-          });
-        });
+      let review = {};
+      jQuery(entry).find('> *').each(function() {
+        review[this.tagName] = this.innerHTML;
+      });
 
-        reviews.sort((a, b) => {
-          return parseInt(a.id) - parseInt(b.id);
-        });
-
-        observer.next(reviews.reverse());
-        observer.complete();
+      reviews.push({
+        id: review['id'],
+        title: review['title'],
+        updated: review['updated'],
+        rating: review['im:rating'],
+        version: review['im:version'],
+        name: review['name'],
+        content: jQuery(entry).find('content[type=text]').text(),
       });
     });
+
+    return reviews;
   }
 
 }
