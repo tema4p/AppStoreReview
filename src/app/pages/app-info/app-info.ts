@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
 import { ReviewService } from '../../services/reviewService';
@@ -17,8 +17,13 @@ import { SpinnerDialog } from '@ionic-native/spinner-dialog';
   templateUrl: 'app-info.html',
 })
 export class AppInfoPage {
+  @Input()
   public item: any;
   public items: any = [];
+  public progress: any = {
+    countriesTotal: 0,
+    countriesResult: 0,
+  };
 
   private allReviews: any = [];
   private perPage: number = 20;
@@ -32,13 +37,17 @@ export class AppInfoPage {
   }
 
   ionViewDidLoad() {
-    this.spinnerDialog.show();
+    // this.spinnerDialog.show();
 
-    this.reviewService.getAll(this.item.trackId).subscribe(items => {
-      this.allReviews = items;
-      this.items = items.slice(0, this.perPage);
-      this.spinnerDialog.hide();
-    });
+    // this.reviewService.getAll(this.item.trackId).subscribe(items => {
+    //   this.allReviews = items;
+    //   this.items = items.slice(0, this.perPage);
+    //   // this.spinnerDialog.hide();
+    // });
+
+    setTimeout(() => {
+      this.reviewService.fetchReviews(this.items, this.progress, this.item.trackId); //just ose link to an items list
+    }, 400);
   }
 
   doInfinite(infiniteScroll): void {

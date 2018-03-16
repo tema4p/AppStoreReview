@@ -8,16 +8,19 @@ import { Observer } from "rxjs/Observer";
 export interface IReview {
   id: string;
   title: string;
-  updated: Date;
-  rating: number;
-  version: number;
+  updated: string;
+  rating: string;
+  version: string;
   name: string;
   content: string;
 }
 
 @Injectable()
 export class ReviewService {
+  private fetchLimit: number = 200;
   private countries = {
+    ru: 'Russia',
+    us: 'United States of America',
     ae: 'United Arab Emirates',
     ag: 'Antigua and Barbuda',
     ai: 'Anguilla',
@@ -137,7 +140,6 @@ export class ReviewService {
     py: 'Paraguay',
     qa: 'Qatar',
     ro: 'Romania',
-    ru: 'Russia',
     sa: 'Saudi Arabia',
     sb: 'Soloman Islands',
     sc: 'Seychelles',
@@ -163,7 +165,6 @@ export class ReviewService {
     tz: 'Tanzania',
     ua: 'Ukraine',
     ug: 'Uganda',
-    us: 'United States of America',
     uy: 'Uruguay',
     uz: 'Uzbekistan',
     vc: 'Saint Vincent and the Grenadines',
@@ -177,58 +178,109 @@ export class ReviewService {
 
   constructor(private http: HttpClient) {}
 
-  public getAll(id: number): Observable<IReview[]> {
-    return new Observable((observer: Observer<IReview[]>) => {
-      let queries: Observable<string>[] = [];
+  public fetchReviews(items: any[], progress: any, id: number): void {
+    let countries = Object.keys(this.countries);
+    progress.countriesTotal = countries.length;
+    progress.countriesResult = 0;
+    countries.forEach((country: string) => {
+      let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
+      setTimeout(() => {
+        this.http.get(url, { responseType: 'text' }).subscribe((xmlString: string) => {
+          progress.countriesResult++;
 
-      Object.keys(this.countries).forEach((country: string) => {
-        let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
-        queries.push(this.http.get(url, { responseType: 'text' }));
-      });
+          let reviews: any[] = this.extractReviews(xmlString, items);
+          items.splice(items.length - 1, 0, ...reviews);
 
-      forkJoin(queries).subscribe((results: string[]) => {
-        let reviews: IReview[] = [];
-
-        results.forEach((xmlString: string)=> {
-          let xmlDocument: XMLDocument = jQuery.parseXML(xmlString);
-          reviews = reviews.concat(this.extractReviews(xmlDocument));
+          if ((items.length < this.fetchLimit)
+            || (progress.countriesResult % 20 === 0)
+            || (progress.countriesTotal === progress.countriesResult)) {
+            console.log('do sort');
+            items.sort((a, b) => {
+              return parseInt(b.id) - parseInt(a.id);
+            });
+            if (items.length > this.fetchLimit) {
+              let toCut: number = items.length - this.fetchLimit;
+              items.splice(items.length - toCut, toCut);
+            }
+          }
         });
-
-        reviews.sort((a, b) => {
-          return parseInt(a.id) - parseInt(b.id);
-        });
-
-        observer.next(reviews.reverse());
-      }, error => {
-        observer.error(error);
       });
     });
   }
+  // public getAll(id: number): Observable<IReview[]> {
+  //   return new Observable((observer: Observer<IReview[]>) => {
+  //     let queries: Observable<string>[] = [];
+  //
+  //     Object.keys(this.countries).forEach((country: string) => {
+  //       let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
+  //       queries.push(this.http.get(url, { responseType: 'text' }));
+  //     });
+  //
+  //     forkJoin(queries).subscribe((results: string[]) => {
+  //       let reviews: IReview[] = [];
+  //
+  //       results.forEach((xmlString: string)=> {
+  //         let xmlDocument: XMLDocument = jQuery.parseXML(xmlString);
+  //         reviews = reviews.concat(this.extractReviews(xmlDocument));
+  //       });
+  //
+  //       reviews.sort((a, b) => {
+  //         return parseInt(a.id) - parseInt(b.id);
+  //       });
+  //
+  //       observer.next(reviews.reverse());
+  //     }, error => {
+  //       observer.error(error);
+  //     });
+  //   });
+  // }
 
-  private extractReviews(xml: XMLDocument): IReview[] {
-    let reviews: IReview[] = [];
-
-    jQuery(xml).find('entry').each((index, entry) => {
-      let author = jQuery(entry).find('author').text();
-      if (!author) return;
-
-      let review = {};
-      jQuery(entry).find('> *').each(function() {
-        review[this.tagName] = this.innerHTML;
-      });
-
-      reviews.push({
-        id: review['id'],
-        title: review['title'],
-        updated: review['updated'],
-        rating: review['im:rating'],
-        version: review['im:version'],
-        name: review['name'],
-        content: jQuery(entry).find('content[type=text]').text(),
-      });
+  private extractReviews(xmlString: string, items): IReview[] {
+    let entries = xmlString.split('<entry>');
+    let reviews: any[] = [];
+    entries.forEach((entry: string) => {
+      let content = entry.match(/<content type="text">([\s|\S]*?)<\/content>/m);
+      if (content) {
+        let id = entry.match(/<id>(.*)<\/id>/)[1];
+        if (items.length > this.fetchLimit) {
+          if (+items[items.length-1].id > +id) {
+            return;
+          }
+        }
+        reviews.push({
+            id: entry.match(/<id>(.*)<\/id>/)[1],
+            title: entry.match(/<title>(.*?)<\/title>/)[1],
+            author: entry.match(/<author><name>(.*)<\/name>/)[1],
+            updated: entry.match(/<updated>(.*?)<\/updated>/)[1],
+            rating: entry.match(/<im:rating>(.*?)<\/im:rating>/)[1],
+            version: entry.match(/<im:version>(.*?)<\/im:version>/)[1],
+            name: entry.match(/<author><name>(.*?)<\/name>/)[1],
+            content: content[1]
+        });
+      }
     });
+    // jQuery(xml).find('entry').each((index, entry) => {
+    //   let author = jQuery(entry).find('author').text();
+    //   if (!author) return;
+    //
+    //   let review = {};
+    //   jQuery(entry).find('> *').each(function() {
+    //     review[this.tagName] = this.innerHTML;
+    //   });
+    //
+    //   reviews.push({
+    //     id: review['id'],
+    //     title: review['title'],
+    //     updated: review['updated'],
+    //     rating: review['im:rating'],
+    //     version: review['im:version'],
+    //     name: review['name'],
+    //     content: jQuery(entry).find('content[type=text]').text(),
+    //   });
+    // });
 
     return reviews;
+    // return [];
   }
 
 }

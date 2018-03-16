@@ -14,11 +14,14 @@
 
 
 <ion-content padding>
+  {{progress.countriesResult}} / {{progress.countriesTotal}} <br>
+  {{items.length}}
   <ion-list>
     <div *ngFor="let review of items">
       <h3>{{review.rating}} - {{review.title}}</h3>
       <p>{{review.content}}</p>
       <p>{{review.version}}</p>
+      <p>{{review.updated}}</p>
     </div>
   </ion-list>
 

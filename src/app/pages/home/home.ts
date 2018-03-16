@@ -32,7 +32,6 @@ export class HomePage {
     if (this.term.length >= this.minLengthSearch) {
       this.http.get(`https://itunes.apple.com/search?term=${this.term}&entity=software`)
         .subscribe((data: any) => {
-          console.log('data.results', data.results);
           this.items = data.results;
           setTimeout(() => {
             this.fullImgDelay = true;
