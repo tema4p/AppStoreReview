@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { forkJoin } from "rxjs/observable/forkJoin";
-import * as jQuery from "jquery";
-import { Observable } from "rxjs/Observable";
-import { Observer } from "rxjs/Observer";
+// import { forkJoin } from "rxjs/observable/forkJoin";
+import * as _ from "lodash";
+// import { Observable } from "rxjs/Observable";
+// import { Observer } from "rxjs/Observer";
 
 export interface IReview {
   id: string;
@@ -188,21 +188,7 @@ export class ReviewService {
         this.http.get(url, { responseType: 'text' }).subscribe((xmlString: string) => {
           progress.countriesResult++;
 
-          let reviews: any[] = this.extractReviews(xmlString, items);
-          items.splice(items.length - 1, 0, ...reviews);
-
-          if ((items.length < this.fetchLimit)
-            || (progress.countriesResult % 20 === 0)
-            || (progress.countriesTotal === progress.countriesResult)) {
-            console.log('do sort');
-            items.sort((a, b) => {
-              return parseInt(b.id) - parseInt(a.id);
-            });
-            if (items.length > this.fetchLimit) {
-              let toCut: number = items.length - this.fetchLimit;
-              items.splice(items.length - toCut, toCut);
-            }
-          }
+          this.extractReviews(xmlString, items);
         });
       });
     });
@@ -243,12 +229,15 @@ export class ReviewService {
       if (content) {
         let id = entry.match(/<id>(.*)<\/id>/)[1];
         if (items.length > this.fetchLimit) {
-          if (+items[items.length-1].id > +id) {
+          if (items[items.length-1].id > id) {
             return;
           }
         }
-        reviews.push({
-            id: entry.match(/<id>(.*)<\/id>/)[1],
+        let index = _.findIndex(items, (item) => {
+          return item.id < id;
+        });
+        items.splice(index, 0, {
+            id: +entry.match(/<id>(.*)<\/id>/)[1],
             title: entry.match(/<title>(.*?)<\/title>/)[1],
             author: entry.match(/<author><name>(.*)<\/name>/)[1],
             updated: entry.match(/<updated>(.*?)<\/updated>/)[1],
@@ -257,6 +246,9 @@ export class ReviewService {
             name: entry.match(/<author><name>(.*?)<\/name>/)[1],
             content: content[1]
         });
+        if (items.length > this.fetchLimit) {
+          items.pop();
+        }
       }
     });
     // jQuery(xml).find('entry').each((index, entry) => {
