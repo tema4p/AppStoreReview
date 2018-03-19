@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
-import { ReviewService } from '../../services/reviewService';
+import { IReviewResult, ReviewService } from '../../services/reviewService';
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 
 /**
@@ -48,6 +48,14 @@ export class AppInfoPage {
     setTimeout(() => {
       this.reviewService.fetchReviews(this.items, this.progress, this.item.trackId); //just ose link to an items list
     }, 400);
+
+    // setTimeout(() => {
+    //   this.reviewService.fetchReviewsObs(this.items, this.progress, this.item.trackId).subscribe((result: IReviewResult) => {
+    //     this.progress.countriesResult = result.countriesResult;
+    //     this.progress.countriesTotal = result.countriesTotal;
+    //     this.items = result.reviews;
+    //   });
+    // }, 400);
   }
 
   doInfinite(infiniteScroll): void {

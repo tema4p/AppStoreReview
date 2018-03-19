@@ -1,23 +1,31 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-// import { forkJoin } from "rxjs/observable/forkJoin";
 import * as _ from "lodash";
-// import { Observable } from "rxjs/Observable";
-// import { Observer } from "rxjs/Observer";
+import { Observable } from "rxjs/Observable";
+import { Observer } from "rxjs/Observer";
 
 export interface IReview {
-  id: string;
+  id: number;
   title: string;
   updated: string;
+  author: string;
   rating: string;
   version: string;
   name: string;
   content: string;
 }
 
+export interface IReviewResult {
+  reviews: IReview[],
+  countriesResult: number;
+  countriesTotal: number;
+}
+
 @Injectable()
 export class ReviewService {
   private fetchLimit: number = 200;
+  private reviews: IReview[] = [];
+
   private countries = {
     ru: 'Russia',
     us: 'United States of America',
@@ -193,6 +201,33 @@ export class ReviewService {
       });
     });
   }
+
+  public fetchReviewsObs(items: any[] = [], progress: any, id: number): Observable<IReviewResult> {
+    let countries = Object.keys(this.countries);
+    let countriesTotal: number = countries.length;
+    let countriesResult: number = 0;
+    this.reviews = [];
+
+    return new Observable((observer: Observer<IReviewResult>) => {
+      countries.forEach((country: string) => {
+        let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
+        setTimeout(() => {
+          this.http.get(url, { responseType: 'text' }).subscribe((xmlString: string) => {
+            this.extractReviews(xmlString, this.reviews);
+            countriesResult++;
+
+            let result: IReviewResult = {
+              reviews: this.reviews,
+              countriesResult,
+              countriesTotal
+            };
+
+            observer.next(result);
+          });
+        });
+      });
+    });
+  }
   // public getAll(id: number): Observable<IReview[]> {
   //   return new Observable((observer: Observer<IReview[]>) => {
   //     let queries: Observable<string>[] = [];
@@ -221,13 +256,12 @@ export class ReviewService {
   //   });
   // }
 
-  private extractReviews(xmlString: string, items): IReview[] {
+  private extractReviews(xmlString: string, items: IReview[]): void {
     let entries = xmlString.split('<entry>');
-    let reviews: any[] = [];
     entries.forEach((entry: string) => {
       let content = entry.match(/<content type="text">([\s|\S]*?)<\/content>/m);
       if (content) {
-        let id = entry.match(/<id>(.*)<\/id>/)[1];
+        let id = +entry.match(/<id>(.*)<\/id>/)[1];
         if (items.length > this.fetchLimit) {
           if (items[items.length-1].id > id) {
             return;
@@ -251,28 +285,6 @@ export class ReviewService {
         }
       }
     });
-    // jQuery(xml).find('entry').each((index, entry) => {
-    //   let author = jQuery(entry).find('author').text();
-    //   if (!author) return;
-    //
-    //   let review = {};
-    //   jQuery(entry).find('> *').each(function() {
-    //     review[this.tagName] = this.innerHTML;
-    //   });
-    //
-    //   reviews.push({
-    //     id: review['id'],
-    //     title: review['title'],
-    //     updated: review['updated'],
-    //     rating: review['im:rating'],
-    //     version: review['im:version'],
-    //     name: review['name'],
-    //     content: jQuery(entry).find('content[type=text]').text(),
-    //   });
-    // });
-
-    return reviews;
-    // return [];
   }
 
 }
