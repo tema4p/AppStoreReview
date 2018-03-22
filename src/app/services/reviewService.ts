@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import * as _ from "lodash";
 import { Observable } from "rxjs/Observable";
 import { Observer } from "rxjs/Observer";
+import moment from 'moment';
 
 export interface IReview {
   id: number;
@@ -11,8 +12,8 @@ export interface IReview {
   author: string;
   rating: string;
   version: string;
-  name: string;
   content: string;
+  country: string;
 }
 
 export interface IReviewResult {
@@ -28,7 +29,7 @@ export class ReviewService {
 
   private countries = {
     ru: 'Russia',
-    us: 'United States of America',
+    us: 'USA',
     ae: 'United Arab Emirates',
     ag: 'Antigua and Barbuda',
     ai: 'Anguilla',
@@ -195,8 +196,7 @@ export class ReviewService {
       setTimeout(() => {
         this.http.get(url, { responseType: 'text' }).subscribe((xmlString: string) => {
           progress.countriesResult++;
-
-          this.extractReviews(xmlString, items);
+          this.extractReviews(xmlString, items, country);
         });
       });
     });
@@ -213,7 +213,7 @@ export class ReviewService {
         let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
         setTimeout(() => {
           this.http.get(url, { responseType: 'text' }).subscribe((xmlString: string) => {
-            this.extractReviews(xmlString, this.reviews);
+            this.extractReviews(xmlString, this.reviews, country);
             countriesResult++;
 
             let result: IReviewResult = {
@@ -228,35 +228,8 @@ export class ReviewService {
       });
     });
   }
-  // public getAll(id: number): Observable<IReview[]> {
-  //   return new Observable((observer: Observer<IReview[]>) => {
-  //     let queries: Observable<string>[] = [];
-  //
-  //     Object.keys(this.countries).forEach((country: string) => {
-  //       let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
-  //       queries.push(this.http.get(url, { responseType: 'text' }));
-  //     });
-  //
-  //     forkJoin(queries).subscribe((results: string[]) => {
-  //       let reviews: IReview[] = [];
-  //
-  //       results.forEach((xmlString: string)=> {
-  //         let xmlDocument: XMLDocument = jQuery.parseXML(xmlString);
-  //         reviews = reviews.concat(this.extractReviews(xmlDocument));
-  //       });
-  //
-  //       reviews.sort((a, b) => {
-  //         return parseInt(a.id) - parseInt(b.id);
-  //       });
-  //
-  //       observer.next(reviews.reverse());
-  //     }, error => {
-  //       observer.error(error);
-  //     });
-  //   });
-  // }
 
-  private extractReviews(xmlString: string, items: IReview[]): void {
+  private extractReviews(xmlString: string, items: IReview[], country: string): void {
     let entries = xmlString.split('<entry>');
     entries.forEach((entry: string) => {
       let content = entry.match(/<content type="text">([\s|\S]*?)<\/content>/m);
@@ -267,18 +240,23 @@ export class ReviewService {
             return;
           }
         }
-        let index = _.findIndex(items, (item) => {
-          return item.id < id;
-        });
+        let index = 0;
+        if (items.length > 0) {
+          index = _.findIndex(items, (item) => {
+            return item.id < id;
+          });
+        }
+        index = (index === -1) ? items.length : index;
+
         items.splice(index, 0, {
             id: +entry.match(/<id>(.*)<\/id>/)[1],
             title: entry.match(/<title>(.*?)<\/title>/)[1],
             author: entry.match(/<author><name>(.*)<\/name>/)[1],
-            updated: entry.match(/<updated>(.*?)<\/updated>/)[1],
+            updated: moment(entry.match(/<updated>(.*?)<\/updated>/)[1]).format('L'),
             rating: entry.match(/<im:rating>(.*?)<\/im:rating>/)[1],
             version: entry.match(/<im:version>(.*?)<\/im:version>/)[1],
-            name: entry.match(/<author><name>(.*?)<\/name>/)[1],
-            content: content[1]
+            content: content[1],
+            country: this.countries[country]
         });
         if (items.length > this.fetchLimit) {
           items.pop();

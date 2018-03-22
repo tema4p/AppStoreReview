@@ -9,19 +9,26 @@
   <ion-navbar>
     <ion-title>{{item.trackName}}</ion-title>
   </ion-navbar>
-
+  <div class="progress">
+    <div class="bar" [ngStyle]="{width: 100 * ( progress.countriesResult / progress.countriesTotal) + '%'}"></div>
+  </div>
 </ion-header>
 
 
 <ion-content padding>
-  {{progress.countriesResult}} / {{progress.countriesTotal}} <br>
-  {{items.length}}
   <ion-list>
-    <div *ngFor="let review of items">
-      <h3>{{review.rating}} - {{review.title}}</h3>
-      <p>{{review.content}}</p>
-      <p>{{review.version}}</p>
-      <p>{{review.updated}}</p>
+    {{items.length}}
+    <div *ngFor="let review of items" class="review">
+      <div class="header">
+        <div class="rating">{{review.rating}}</div>
+        <div class="title">{{review.title}}</div>
+        <div class="version">v{{review.version}}</div>
+      </div>
+      <div class="content">{{review.content}}</div>
+      <div class="header">
+        <div class="author">{{review.author}} <span class="country">({{review.country}})</span></div>
+        <div class="date">{{review.updated}}</div>
+      </div>
     </div>
   </ion-list>
 

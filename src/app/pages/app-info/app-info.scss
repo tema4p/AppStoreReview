@@ -1,3 +1,58 @@
 page-app-info {
+  .progress {
+    height: 2px;
+    width: 100%;
+    opacity: 0.3;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    .bar {
+      transition: 100ms ease width;
+      height: 2px;
+      width: 0;
+      background-color: #005cff;
+    }
+  }
+
+  .review {
+    padding: 4px 10px;
+    border-bottom: 1px solid #f1f1f1;
+    background: #ffffff;
+    margin: 4px -10px;
+    border-radius: 8px;
+    box-shadow: 1px 1px 15px #f1f1f1;
+
+    .header {
+      padding: 4px 0;
+      display: flex;
+      .title {
+        flex: 1;
+        font-weight: 500;
+      }
+      .date, .version {
+        color: gray;
+        font-size: 90%;
+      }
+      .rating {
+        color: darkorange;
+        padding-right: 4px;
+        font-weight: 500;
+      }
+      .author {
+        color: gray;
+        flex: 1;
+        font-size: 90%;
+        .country {
+          color: gray;
+          font-style: italic;
+          font-size: 90%;
+        }
+      }
+    }
+    .content {
+
+    }
+  }
+
 
 }
