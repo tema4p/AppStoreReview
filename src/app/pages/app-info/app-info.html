@@ -18,8 +18,8 @@
 <ion-content padding>
   <ion-list>
     <div class="total">
-      <div class="reviews">Reviews: {{items.length}}{{items.length === 200 ? '+' : ''}}</div>
-      <div class="countries">Countries: {{getCountries()}}</div>
+      <div class="reviews">Reviews: {{allReviews.length}}{{allReviews.length === 200 ? '+' : ''}}</div>
+      <div class="countries">Countries: {{loadedCountriesCount}}</div>
     </div>
     <div *ngFor="let review of items" class="review">
       <div class="header">

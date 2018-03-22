@@ -16,16 +16,9 @@ export interface IReview {
   country: string;
 }
 
-export interface IReviewResult {
-  reviews: IReview[],
-  countriesResult: number;
-  countriesTotal: number;
-}
-
 @Injectable()
 export class ReviewService {
   private fetchLimit: number = 200;
-  private reviews: IReview[] = [];
 
   private countries = {
     ru: 'Russia',
@@ -187,42 +180,18 @@ export class ReviewService {
 
   constructor(private http: HttpClient) {}
 
-  public fetchReviews(items: any[], progress: any, id: number): void {
+  public fetchReviews(items: IReview[], progress: any, id: number): Observable<null> {
     let countries = Object.keys(this.countries);
     progress.countriesTotal = countries.length;
     progress.countriesResult = 0;
-    countries.forEach((country: string) => {
-      let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
-      setTimeout(() => {
-        this.http.get(url, { responseType: 'text' }).subscribe((xmlString: string) => {
-          progress.countriesResult++;
-          this.extractReviews(xmlString, items, country);
-        });
-      });
-    });
-  }
-
-  public fetchReviewsObs(items: any[] = [], progress: any, id: number): Observable<IReviewResult> {
-    let countries = Object.keys(this.countries);
-    let countriesTotal: number = countries.length;
-    let countriesResult: number = 0;
-    this.reviews = [];
-
-    return new Observable((observer: Observer<IReviewResult>) => {
+    return new Observable((observer: Observer<null>) => {
       countries.forEach((country: string) => {
         let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
         setTimeout(() => {
-          this.http.get(url, { responseType: 'text' }).subscribe((xmlString: string) => {
-            this.extractReviews(xmlString, this.reviews, country);
-            countriesResult++;
-
-            let result: IReviewResult = {
-              reviews: this.reviews,
-              countriesResult,
-              countriesTotal
-            };
-
-            observer.next(result);
+          this.http.get(url, {responseType: 'text'}).subscribe((xmlString: string) => {
+            progress.countriesResult++;
+            this.extractReviews(xmlString, items, country);
+            observer.next(null);
           });
         });
       });

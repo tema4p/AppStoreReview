@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
-import { ReviewService } from '../../services/reviewService';
+import { IReview, ReviewService } from '../../services/reviewService';
 import { SpinnerDialog } from '@ionic-native/spinner-dialog';
 import * as _ from "lodash";
 
@@ -20,13 +20,14 @@ import * as _ from "lodash";
 export class AppInfoPage {
   @Input()
   public item: any;
-  public items: any = [];
+  public items: IReview[] = [];
+  public loadedCountriesCount: number = 0;
   public progress: any = {
     countriesTotal: 0,
     countriesResult: 0,
   };
 
-  private allReviews: any = [];
+  private allReviews: IReview[] = [];
   private perPage: number = 20;
   private currentPage: number = 1;
 
@@ -39,12 +40,22 @@ export class AppInfoPage {
 
   ionViewDidLoad() {
     setTimeout(() => {
-      this.reviewService.fetchReviews(this.items, this.progress, this.item.trackId); //just ose link to an items list
+      this.reviewService
+        .fetchReviews(this.allReviews, this.progress, this.item.trackId) //just ose link to an items list
+        .subscribe(() => {
+          if (this.items.length < this.perPage) { // need to rework for showing new first 20 items
+            this.items = [
+              ...this.items,
+              ...this.allReviews.slice(0, this.perPage - this.items.length)
+            ];
+          }
+          this.loadedCountriesCount = this.getCountries();
+        });
     }, 400);
   }
 
   getCountries(): number {
-    return _.uniq(_.map(this.items, 'country')).length;
+    return _.uniq(_.map(this.allReviews, 'country')).length;
   }
 
   doInfinite(infiniteScroll): void {
