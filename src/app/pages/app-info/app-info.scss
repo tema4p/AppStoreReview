@@ -14,6 +14,14 @@ page-app-info {
     }
   }
 
+  .total {
+    color: gray;
+    display: flex;
+    .reviews {
+      flex: 1;
+    }
+  }
+
   .review {
     padding: 4px 10px;
     border-bottom: 1px solid #f1f1f1;
