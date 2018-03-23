@@ -15,6 +15,7 @@ import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 
 import { ReviewService } from './services/reviewService';
+import { Stars } from './components/stars/stars.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import { ReviewService } from './services/reviewService';
     AboutPage,
     ContactPage,
     HomePage,
+    Stars,
     AppInfoPage,
     TabsPage
   ],

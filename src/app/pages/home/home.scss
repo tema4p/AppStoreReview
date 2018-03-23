@@ -1,13 +1,4 @@
 page-home {
-  .flex {
-    display: flex;
-    flex-direction: row;
-
-    .flex-column {
-      flex-direction: column;
-    }
-  }
-
   i {
     color: gray;
   }
@@ -32,23 +23,6 @@ page-home {
           height: 80px;
           background-size: cover;
           border-radius: 15px;
-        }
-      }
-      .rating {
-        span {
-          min-width: 16px;
-          color: #bfbfbf;
-        }
-      }
-      .rating-fill {
-        position: absolute;
-        overflow: hidden;
-        color: #de9a56;
-        width: 0;
-        top: 0;
-        left: 0;
-        span {
-          min-width: 16px;
         }
       }
     }

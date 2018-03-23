@@ -14,16 +14,7 @@
          class="apps-list flex"
      (click)="goToApp(item)">
       <div class="flex flex-column left-column">
-        <div class="rating flex">
-          <span *ngFor="let s of [1,2,3,4,5]">
-            <ion-icon name="ios-star-outline"></ion-icon>
-          </span>
-        </div>
-        <div class="rating-fill flex" [ngStyle]="{width: 100 * ( item.averageUserRating / 5) + '%'}">
-          <span *ngFor="let s of [1,2,3,4,5]">
-            <ion-icon name="ios-star"></ion-icon>
-          </span>
-        </div>
+        <stars [rate]="item.averageUserRating"></stars>
         <div class="img" [ngStyle]="{'background-image': 'url(' + item.artworkUrl60 + ')'}">
           <div class="img-main" *ngIf="fullImgDelay" [ngStyle]="{'background-image': 'url(' + item.artworkUrl512 + ')'}"></div>
         </div>

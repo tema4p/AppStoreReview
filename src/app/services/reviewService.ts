@@ -11,7 +11,7 @@ export interface IReview {
   title: string;
   updated: string;
   author: string;
-  rating: string;
+  rating: number;
   version: string;
   content: string;
   country: string;
@@ -224,7 +224,7 @@ export class ReviewService {
             title: this.replaceCharts(entry.match(/<title>(.*?)<\/title>/)[1]),
             author: this.replaceCharts(entry.match(/<author><name>(.*)<\/name>/)[1]),
             updated: moment(entry.match(/<updated>(.*?)<\/updated>/)[1]).format('L'),
-            rating: entry.match(/<im:rating>(.*?)<\/im:rating>/)[1],
+            rating: +entry.match(/<im:rating>(.*?)<\/im:rating>/)[1],
             version: entry.match(/<im:version>(.*?)<\/im:version>/)[1],
             content: this.replaceCharts(content[1]),
             country: this.countries[country],

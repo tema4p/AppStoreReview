@@ -1,0 +1,10 @@
+<div class="rating flex">
+  <span *ngFor="let s of [1,2,3,4,5]">
+    <ion-icon name="ios-star-outline"></ion-icon>
+  </span>
+</div>
+<div class="rating-fill flex" [ngStyle]="{width: 100 * ( rate / 5) + '%'}">
+  <span *ngFor="let s of [1,2,3,4,5]">
+    <ion-icon name="ios-star"></ion-icon>
+  </span>
+</div>

@@ -23,7 +23,9 @@
     </div>
     <div *ngFor="let review of items" class="review">
       <div class="header">
-        <div class="rating">{{review.rating}}</div>
+        <div class="flex">
+          <stars [rate]="review.rating"></stars>
+        </div>
         <div class="title">{{review.title}}</div>
         <div class="version">v{{review.version}}</div>
       </div>
@@ -31,7 +33,7 @@
       <div class="header">
         <div class="author">
           <img src="assets/countries/{{review.countryCode}}.png" alt="">
-          {{review.author}} 
+          {{review.author}}
           <span class="country">({{review.country}})</span>
         </div>
         <div class="date">{{review.updated}}</div>

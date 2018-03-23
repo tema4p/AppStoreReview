@@ -41,11 +41,6 @@ page-app-info {
         color: gray;
         font-size: 90%;
       }
-      .rating {
-        color: darkorange;
-        padding-right: 4px;
-        font-weight: 500;
-      }
       .author {
         color: gray;
         flex: 1;
@@ -56,9 +51,12 @@ page-app-info {
           font-size: 90%;
         }
       }
+      stars {
+        margin-right: 2px;
+      }
     }
     .content {
-
+      padding: 4px 0;
     }
   }
 
