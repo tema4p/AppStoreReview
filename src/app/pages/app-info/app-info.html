@@ -18,6 +18,7 @@
 
 
 <ion-content padding>
+  <app-card [item]="item"  class="flex"></app-card>
   <ion-list>
     <div class="total">
       <div class="reviews">Reviews: {{allReviews.length}}{{allReviews.length === 200 ? '+' : ''}}</div>

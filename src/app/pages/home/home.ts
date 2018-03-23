@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
 import {AppInfoPage} from '../app-info/app-info';
-import moment from 'moment';
 
 @Component({
   selector: 'page-home',
@@ -21,10 +20,6 @@ export class HomePage {
     setTimeout(() => {
       this.getItems();
     },10);
-  }
-
-  public getDateFormatted(text: string): string {
-    return moment(text).format('L');
   }
 
   public getItems(): void {
