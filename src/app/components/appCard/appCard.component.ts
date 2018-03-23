@@ -10,10 +10,14 @@ export class AppCard {
   @Input()
   item: any;
 
-  constructor(
-    // public verbsService: VerbsService
-  ) {
+  public fullImgDelay: boolean = false;
 
+  constructor(
+  // public verbsService: VerbsService
+  ) {
+    setTimeout(() => {
+      this.fullImgDelay = true;
+    }, 10)
   }
 
   ngOnChanges(changes: SimpleChanges): void {

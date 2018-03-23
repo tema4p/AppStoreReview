@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
-import {AppInfoPage} from '../app-info/app-info';
+import { AppInfoPage } from '../app-info/app-info';
 
 @Component({
   selector: 'page-home',
@@ -23,14 +23,10 @@ export class HomePage {
   }
 
   public getItems(): void {
-    this.fullImgDelay = false;
     if (this.term.length >= this.minLengthSearch) {
       this.http.get(`https://itunes.apple.com/search?term=${this.term}&entity=software`)
         .subscribe((data: any) => {
           this.items = data.results;
-          setTimeout(() => {
-            this.fullImgDelay = true;
-          }, 10)
         });
     }
   }
