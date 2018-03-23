@@ -10,6 +10,8 @@ page-app-info {
       transition: 100ms ease width;
       height: 2px;
       width: 0;
+      box-shadow: 0 0 9px #00adff;
+      border-radius: 5px;
       background-color: #005cff;
     }
   }

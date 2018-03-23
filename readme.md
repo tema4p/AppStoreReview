@@ -3,10 +3,9 @@
 
 ### TODO:
 #### Current
-+ Fix text with &#
 + Optimize input & search trigger
-+ Stars in review card
-+ Remove footer
++ Hide footer
++ "Check In AppStore" button on the reviews page (under the app card)
 
 #### v1
 + Favorites Apps
