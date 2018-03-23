@@ -10,7 +10,9 @@
     <ion-title>{{item.trackName}}</ion-title>
   </ion-navbar>
   <div class="progress">
-    <div class="bar" [ngStyle]="{width: 100 * ( progress.countriesResult / progress.countriesTotal) + '%'}"></div>
+    <div class="bar"
+         *ngIf="progress.countriesResult < progress.countriesTotal"
+         [ngStyle]="{width: 100 * ( progress.countriesResult / progress.countriesTotal) + '%'}"></div>
   </div>
 </ion-header>
 
