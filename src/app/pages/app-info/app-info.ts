@@ -49,7 +49,7 @@ export class AppInfoPage {
           }
           this.loadedCountriesCount = this.getCountries();
         });
-    }, 400);
+    }, 600);
   }
 
   getCountries(): number {
