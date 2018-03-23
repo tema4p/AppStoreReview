@@ -4,6 +4,7 @@ import * as _ from "lodash";
 import { Observable } from "rxjs/Observable";
 import { Observer } from "rxjs/Observer";
 import moment from 'moment';
+import * as $ from 'jquery';
 
 export interface IReview {
   id: number;
@@ -14,6 +15,7 @@ export interface IReview {
   version: string;
   content: string;
   country: string;
+  countryCode: string;
 }
 
 @Injectable()
@@ -219,13 +221,14 @@ export class ReviewService {
 
         items.splice(index, 0, {
             id: +entry.match(/<id>(.*)<\/id>/)[1],
-            title: entry.match(/<title>(.*?)<\/title>/)[1],
-            author: entry.match(/<author><name>(.*)<\/name>/)[1],
+            title: this.replaceCharts(entry.match(/<title>(.*?)<\/title>/)[1]),
+            author: this.replaceCharts(entry.match(/<author><name>(.*)<\/name>/)[1]),
             updated: moment(entry.match(/<updated>(.*?)<\/updated>/)[1]).format('L'),
             rating: entry.match(/<im:rating>(.*?)<\/im:rating>/)[1],
             version: entry.match(/<im:version>(.*?)<\/im:version>/)[1],
-            content: content[1],
-            country: this.countries[country]
+            content: this.replaceCharts(content[1]),
+            country: this.countries[country],
+            countryCode: country
         });
         if (items.length > this.fetchLimit) {
           items.pop();
@@ -234,4 +237,7 @@ export class ReviewService {
     });
   }
 
+  public replaceCharts(text: string) {
+    return $('<div></div>').html(text).text();
+  }
 }

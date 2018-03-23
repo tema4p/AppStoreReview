@@ -29,7 +29,11 @@
       </div>
       <div class="content">{{review.content}}</div>
       <div class="header">
-        <div class="author">{{review.author}} <span class="country">({{review.country}})</span></div>
+        <div class="author">
+          <img src="assets/countries/{{review.countryCode}}.png" alt="">
+          {{review.author}} 
+          <span class="country">({{review.country}})</span>
+        </div>
         <div class="date">{{review.updated}}</div>
       </div>
     </div>
