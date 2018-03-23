@@ -36,7 +36,7 @@ export class AppInfoPage {
     this.item = navParams.get('item');
   }
 
-  ionViewDidLoad() {
+  ionViewDidEnter() {
     setTimeout(() => {
       this.reviewService
         .fetchReviews(this.allReviews, this.progress, this.item.trackId) //just ose link to an items list
