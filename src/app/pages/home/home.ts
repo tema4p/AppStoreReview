@@ -10,7 +10,7 @@ import { AppInfoPage } from '../app-info/app-info';
 export class HomePage {
   public items: any[];
   public stars: [1, 2, 3, 4, 5];
-  public term: string = 'english';
+  public term: string = '';
   public fullImgDelay: boolean = false;
 
   private minLengthSearch: number = 3;
