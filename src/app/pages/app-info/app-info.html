@@ -7,6 +7,14 @@
 <ion-header>
   <ion-navbar>
     <ion-title>{{item.trackName}}</ion-title>
+    <ion-buttons end>
+      <button ion-button *ngIf="!favoritesService.isFavorite(item)" icon-only (click)="favoritesService.add(item)">
+        <ion-icon name="ios-star-outline"></ion-icon>
+      </button>
+      <button ion-button *ngIf="favoritesService.isFavorite(item)" icon-only (click)="favoritesService.remove(item)">
+        <ion-icon name="ios-star"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
   <div class="progress">
     <div class="bar"

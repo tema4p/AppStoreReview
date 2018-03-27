@@ -2,6 +2,7 @@ import {Component, Input} from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
 import { IReview, ReviewService } from '../../services/reviewService';
+import { FavoritesService } from '../../services/favoritesService';
 import * as _ from "lodash";
 
 /**
@@ -32,7 +33,8 @@ export class AppInfoPage {
 
   constructor(public navParams: NavParams,
               public http: HttpClient,
-              public reviewService: ReviewService) {
+              public reviewService: ReviewService,
+              public favoritesService: FavoritesService) {
     this.item = navParams.get('item');
   }
 

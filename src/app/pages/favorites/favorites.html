@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Favorites
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="favoritesService.favorites.length > 0">
+    <div *ngFor="let item of items">
+      <app-card [item]="item" class="flex"
+                (click)="goToApp(item)">
+      </app-card>
+    </div>
+  </ion-list>
+  <div class="empty" *ngIf="favoritesService.favorites.length === 0">
+    You have no favorites apps
+  </div>
+</ion-content>

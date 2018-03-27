@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
-import { AboutPage } from './pages/about/about';
+import { FavoritesPage } from './pages/favorites/favorites';
 import { ContactPage } from './pages/contact/contact';
 import { HomePage } from './pages/home/home';
 import { AppInfoPage } from './pages/app-info/app-info';
@@ -14,13 +14,14 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpClientModule } from '@angular/common/http';
 
 import { ReviewService } from './services/reviewService';
+import { FavoritesService } from './services/favoritesService';
 import { Stars } from './components/stars/stars.component';
 import { AppCard } from './components/appCard/appCard.component';
 
 @NgModule({
   declarations: [
     MyApp,
-    AboutPage,
+    FavoritesPage,
     ContactPage,
     HomePage,
     Stars,
@@ -36,7 +37,7 @@ import { AppCard } from './components/appCard/appCard.component';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    AboutPage,
+    FavoritesPage,
     ContactPage,
     HomePage,
     AppInfoPage,
@@ -46,7 +47,8 @@ import { AppCard } from './components/appCard/appCard.component';
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    ReviewService
+    ReviewService,
+    FavoritesService
   ]
 })
 export class AppModule {}
