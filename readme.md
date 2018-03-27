@@ -2,13 +2,8 @@
 ## AppStore Reviews
 
 ### TODO:
-#### Current
-+ Optimize input & search trigger
-+ Hide footer
-+ "Check In AppStore" button on the reviews page (under the app card)
 
 #### v1
-+ Favorites Apps
 + Search autocomplete
 + Filters by country/rate
 + Google Translate
