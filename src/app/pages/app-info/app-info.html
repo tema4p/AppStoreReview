@@ -28,8 +28,12 @@
   <app-card [item]="item"  class="flex"></app-card>
   <ion-list>
     <div class="total">
+
       <div class="reviews">Reviews: {{allReviews.length}}{{allReviews.length === 200 ? '+' : ''}}</div>
       <div class="countries">Countries: {{loadedCountriesCount}}</div>
+      <a ion-button small outline href="https://itunes.apple.com/app/id{{item.trackId}}">
+        AppStore&nbsp;<ion-icon name="ios-arrow-forward"></ion-icon>
+      </a>
     </div>
     <div *ngFor="let review of items" class="review">
       <div class="header">

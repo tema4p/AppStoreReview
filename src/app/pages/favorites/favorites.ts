@@ -15,8 +15,6 @@ export class FavoritesPage {
 
     if (favoritesService.favorites.length === 0) {
       this.navCtrl.parent.select(1);
-    } else {
-      this.items = favoritesService.getFavoritesItems();
     }
   }
 

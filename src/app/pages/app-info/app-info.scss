@@ -23,7 +23,11 @@ page-app-info {
   .total {
     color: gray;
     display: flex;
+    align-items: center;
     .reviews {
+      flex: 1;
+    }
+    .countries {
       flex: 1;
     }
   }
