@@ -5,10 +5,12 @@
 </ion-header>
 
 <ion-content>
-  <ion-searchbar [(ngModel)]="term"
-                 (ionInput)="getItems($event)"
-                 [debounce]="400">
-  </ion-searchbar>
+  <form action=".">
+    <ion-searchbar [(ngModel)]="term"
+                   [ngModelOptions]="{standalone: true}"
+                   (search)="getItems($event)">
+    </ion-searchbar>
+  </form>
   <ion-list>
     <div *ngFor="let item of items">
       <app-card [item]="item" class="flex"

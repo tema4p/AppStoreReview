@@ -29,6 +29,12 @@ export class HomePage {
           this.items = data.results;
         });
     }
+    this.hideKeyboard();
+  }
+
+  public hideKeyboard(): void {
+    let activeElement = <HTMLElement>document.activeElement;
+    activeElement && activeElement.blur && activeElement.blur();
   }
 
   public goToApp(item): void {
