@@ -37,19 +37,15 @@ export class AppInfoPage {
   }
 
   ionViewDidEnter() {
-    setTimeout(() => {
-      this.reviewService
-        .fetchReviews(this.allReviews, this.progress, this.item.trackId) //just ose link to an items list
-        .subscribe(() => {
-          if (this.items.length < this.perPage) { // need to rework for showing new first 20 items
-            this.items = [
-              ...this.items,
-              ...this.allReviews.slice(0, this.perPage - this.items.length)
-            ];
-          }
-          this.loadedCountriesCount = this.getCountries();
-        });
-    }, 600);
+    this.reviewService.fetchReviewsByGroup(this.allReviews, this.progress, this.item.trackId, 10).subscribe(() => {
+      if (this.items.length < this.perPage) {
+        this.items = [
+          ...this.items,
+          ...this.allReviews.slice(0, this.perPage - this.items.length)
+        ];
+      }
+      this.loadedCountriesCount = this.getCountries();
+    });
   }
 
   getCountries(): number {

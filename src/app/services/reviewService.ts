@@ -5,6 +5,7 @@ import { Observable } from "rxjs/Observable";
 import { Observer } from "rxjs/Observer";
 import moment from 'moment';
 import * as $ from 'jquery';
+import { forkJoin } from "rxjs/observable/forkJoin";
 
 export interface IReview {
   id: number;
@@ -21,6 +22,7 @@ export interface IReview {
 @Injectable()
 export class ReviewService {
   private fetchLimit: number = 200;
+  private currentCountry: string;
 
   private countries = {
     ru: 'Russia',
@@ -181,6 +183,57 @@ export class ReviewService {
   };
 
   constructor(private http: HttpClient) {}
+
+  public fetchReviewsByGroup(items: IReview[], progress: any, id: number, perGroup: number): Observable<any> {
+    return new Observable((observer: Observer<null>) => {
+      this.fetchByGroup(items, progress, id, observer, perGroup);
+    });
+  }
+
+  public async fetchByGroup(items: IReview[], progress: any, id: number, observer: any, perGroup: number) {
+    let countries = Object.keys(this.countries);
+    let perItem: number = perGroup || 10;
+    let totalCount: number = Math.floor(countries.length / perItem);
+    let countryGroups: any = [];
+    let queries = [];
+
+    progress.countriesTotal = countries.length;
+
+    for (let i = 0; i<= totalCount; i++) {
+      countryGroups.push(countries.slice(i * perItem, i * perItem + perItem));
+    }
+
+    countryGroups.map((countryGroup) => {
+      queries.push(this.getReviewsBy.bind(this, id, countryGroup))
+    });
+
+    for (let query of queries) {
+      let results = await query();
+      progress.countriesResult += perItem;
+      results.map((result: any) => {
+        this.extractReviews(result.xmlString, items, result.country);
+      });
+      observer.next(true);
+    }
+  }
+
+  public getReviewsBy(id: number, countries: string[]): Promise<any> {
+    return new Promise((resolve) => {
+      let queries: any = [];
+      countries.forEach((country: string) => {
+        let url: string = `https://itunes.apple.com/${country.toLowerCase()}/rss/customerreviews/id=${id}/sortBy=mostRecent/xml`;
+        queries.push(this.http.get(url, {responseType: 'text'}));
+      });
+
+      forkJoin(queries).subscribe(results => {
+        resolve(countries.map((country: string, index: number) => {
+          return {country, xmlString: results[index]}
+        }));
+      }, () => {
+        resolve([]);
+      });
+    });
+  }
 
   public fetchReviews(items: IReview[], progress: any, id: number): Observable<null> {
     let countries = Object.keys(this.countries);
