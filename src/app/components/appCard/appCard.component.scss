@@ -44,7 +44,7 @@ app-card {
       -webkit-box-orient: vertical;
       width: 100%;
       word-wrap: break-word;
-      word-break: normal;
+      word-break: break-word;
     }
     .info {
       color: gray;

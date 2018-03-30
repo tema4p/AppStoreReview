@@ -22,7 +22,6 @@ export interface IReview {
 @Injectable()
 export class ReviewService {
   private fetchLimit: number = 200;
-  private currentCountry: string;
 
   private countries = {
     ru: 'Russia',
