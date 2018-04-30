@@ -35,12 +35,17 @@ export class FavoritesService {
     this.saveFavorites();
   }
 
-  getFavoritesItems(): any[] {
-    let items: any[] = [];
+  getFavoritesItems(favItems?: any[]): any[] {
+    let items: any[] = favItems || [];
     _.each(this.favorites, (fav: any) => {
       this.http.get(`https://itunes.apple.com/search?term=${fav}&entity=software`)
         .subscribe((data: any) => {
-          items.push(data.results[0]);
+          let find = _.find(items, {trackId: data.results[0].trackId});
+          if (find) {
+            _.extend(find, data.results[0])
+          } else {
+            items.push(data.results[0]);
+          }
         });
     });
     return items;

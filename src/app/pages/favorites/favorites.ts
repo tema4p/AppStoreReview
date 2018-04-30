@@ -19,7 +19,7 @@ export class FavoritesPage {
   }
 
   ionViewDidEnter() {
-    this.items = this.favoritesService.getFavoritesItems();
+    this.items = this.favoritesService.getFavoritesItems(this.items);
   }
 
   public goToApp(item): void {

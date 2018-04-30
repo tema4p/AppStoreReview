@@ -17,7 +17,7 @@ import { ReviewService } from './services/reviewService';
 import { FavoritesService } from './services/favoritesService';
 import { Stars } from './components/stars/stars.component';
 import { AppCard } from './components/appCard/appCard.component';
-
+import { InAppPurchase } from '@ionic-native/in-app-purchase';
 @NgModule({
   declarations: [
     MyApp,
@@ -44,6 +44,7 @@ import { AppCard } from './components/appCard/appCard.component';
     TabsPage
   ],
   providers: [
+    InAppPurchase,
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
