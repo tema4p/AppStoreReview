@@ -282,6 +282,7 @@ export class ReviewService {
             country: this.countries[country],
             countryCode: country
         });
+
         if (items.length > this.fetchLimit) {
           items.pop();
         }
